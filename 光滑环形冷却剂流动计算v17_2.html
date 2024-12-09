@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光滑环形冷却剂流动计算</title>
+</head>
+<body>
+    <h1>光滑环形冷却剂流动计算</h1>
+    <form id="calculationForm">
+        <label for="qm">请输入冷却剂质量流量kg/s: </label>
+        <input type="number" id="qm" step="any"><br><br>
+
+        <label for="mu">请输入冷却剂黏度(kg/(m*s)): </label>
+        <input type="number" id="mu" step="any"><br><br>
+
+        <label for="cp">请输入冷却剂比热容(KJ/(Kg*K)): </label>
+        <input type="number" id="cp" step="any"><br><br>
+
+        <label for="rou">请输入冷却剂密度(kg/m3): </label>
+        <input type="number" id="rou" step="any"><br><br>
+
+        <label for="la">请输入冷却剂导热率（W/m*k）: </label>
+        <input type="number" id="la" step="any"><br><br>
+
+        <label for="law">请输入壁面导热率（W/m*k）: </label>
+        <input type="number" id="law" step="any"><br><br>
+
+        <label for="q">请输入热流密度（W/m^2）: </label>
+        <input type="number" id="q" step="any"><br><br>
+
+        <label for="tf">请输入冷却剂温升（k）: </label>
+        <input type="number" id="tf" step="any"><br><br>
+
+        <label for="td">请输入当地气温（摄氏度）: </label>
+        <input type="number" id="td" step="any"><br><br>
+
+        <label for="xi">请输入推力室壁厚（mm）: </label>
+        <input type="number" id="xi" step="any"><br><br>
+
+        <label for="de">请输入冷却通道当量直径: </label>
+        <input type="number" id="de" step="any"><br><br>
+
+        <label for="A">请输入冷却通道面积(mm2): </label>
+        <input type="number" id="A" step="any"><br><br>
+
+        <button type="button" onclick="calculate()">计算</button>
+    </form>
+
+    <h2>计算结果</h2>
+    <p id="result"></p>
+
+    <footer>
+        <p>本软件由铼铱工业编写。如有任何问题反馈邮箱lseqy2024@outlook.com</p>
+    </footer>
+
+    <script>
+        function calculate() {
+            const qm = parseFloat(document.getElementById("qm").value);
+            const mu = parseFloat(document.getElementById("mu").value);
+            const cp = parseFloat(document.getElementById("cp").value);
+            const rou = parseFloat(document.getElementById("rou").value);
+            const la = parseFloat(document.getElementById("la").value);
+            const law = parseFloat(document.getElementById("law").value);
+            const q = parseFloat(document.getElementById("q").value);
+            const tf = parseFloat(document.getElementById("tf").value);
+            const td = parseFloat(document.getElementById("td").value);
+            const xi = parseFloat(document.getElementById("xi").value) / 1000;
+            const de = parseFloat(document.getElementById("de").value);
+            const A = parseFloat(document.getElementById("A").value) * 0.000001;
+
+            const v = qm / (A * rou);
+            const re = (rou * v * de) / mu;
+            const pr = (cp * mu) / la;
+            const nuf = 0.023 * Math.pow(re, 0.8) * Math.pow(pr, 0.4);
+            const h0 = (nuf * la) / de;
+            const twf_1 = tf + td + 273.15;
+            const twf_2 = q / h0;
+            const twf = twf_2 + twf_1;
+            const twg_1 = (q * xi) / law;
+            const twg = twg_1 + twf;
+
+            let result = `冷却剂流动速度: ${v.toFixed(2)} m/s<br>`;
+            result += `冷却剂雷诺数: ${re.toFixed(2)}<br>`;
+            result += `冷却剂普郎特数: ${pr.toFixed(2)}<br>`;
+            result += `冷却剂努塞尔数: ${nuf.toFixed(2)}<br>`;
+            result += `冷却剂与壁面对流换热系数: ${h0.toFixed(2)} W/(m^2)<br>`;
+            result += `液体壁面温度: ${twf.toFixed(2)} K<br>`;
+            result += `气体壁面温度: ${twg.toFixed(2)} K<br>`;
+
+            if (twf < twg) {
+                const difference = twg - twf;
+                const percentage = (difference / twg) * 100;
+                result += `液体壁面温度低于气体壁面温度，差值百分比为${percentage.toFixed(2)}%`;
+            } else if (twf > twg) {
+                result += "啊？这他妈什么情况？液体壁面温度大于气体壁面温度？";
+            } else {
+                result += "啊？这他妈什么情况？我操，这就有点离谱了";
+            }
+
+            document.getElementById("result").innerHTML = result;
+        }
+    </script>
+</body>
+</html>
+

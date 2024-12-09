@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>针栓喷注器计算</title>
+<script>
+function calculate() {
+    var mo_1 = parseFloat(document.getElementById("mo_1").value);
+    var mf_1 = parseFloat(document.getElementById("mf_1").value);
+    var ro_1 = parseFloat(document.getElementById("ro_1").value);
+    var rf_1 = parseFloat(document.getElementById("rf_1").value);
+    var do_1 = parseFloat(document.getElementById("do_1").value);
+    var df_1 = parseFloat(document.getElementById("df_1").value);
+    var zuo_1 = parseFloat(document.getElementById("zuo_1").value);
+    var zuf_1 = parseFloat(document.getElementById("zuf_1").value);
+    var nf = parseFloat(document.getElementById("nf").value);
+    var Dp_1 = parseFloat(document.getElementById("Dp_1").value);
+    var Dp = Dp_1 / 1000;
+
+    var zo_1 = 2 * ro_1 * do_1 * 1000000;
+    var zf_1 = 2 * rf_1 * df_1 * 1000000;
+    var zo_2 = Math.sqrt(zo_1);
+    var zf_2 = Math.sqrt(zf_1);
+    var Ano_1 = mo_1 / (zuo_1 * zo_2);
+    var Anf_1 = mf_1 / (zuf_1 * zf_2);
+    var Ds_1 = (4 * Ano_1) / (Math.PI * nf);
+    var Ds = Math.sqrt(Ds_1) * 1000;
+    var Vo_1 = mo_1 / (ro_1 * Ano_1);
+    var Vf_1 = mf_1 / (rf_1 * Anf_1);
+    var Ctmr = (mo_1 * Vo_1) / (mf_1 * Vf_1);
+    var Cbf = (nf * Ds) / (Math.PI * Dp_1);
+    var Clmr = Ctmr / Cbf;
+    var c_1 = 1 / (1 + Clmr);
+    var c = Math.acos(c_1);
+    var c_3 = (c * 180) / Math.PI;
+    
+    var Andp_1 = ((Dp/2)**2)*Math.PI;
+    var Andp_2 = Andp_1 + Anf_1;
+    var Andp_3 = (4*Andp_2)/Math.PI;
+    var Andp_4 = Math.sqrt(Andp_3);
+    var Andp_5 = (Andp_4 - Dp) / 2;
+    var Andp_6 = Andp_5 * 1000;
+
+    document.getElementById("output").innerHTML = 
+        "<p>径向面积: " + (Ano_1 * 1000000).toFixed(4) + " mm2</p>" +
+        "<p>轴向面积: " + (Anf_1 * 1000000).toFixed(4) + " mm2</p>" +
+        "<p>径向出口速度: " + Vo_1.toFixed(4) + " m/s</p>" +
+        "<p>轴向出口速度: " + Vf_1.toFixed(4) + " m/s</p>" +
+        "<p>动量比: " + Ctmr.toFixed(4) + "</p>" +
+        "<p>阻塞比: " + Cbf.toFixed(4) + "</p>" +
+        "<p>局部动量比: " + Clmr.toFixed(4) + "</p>" +
+        "<p>合成雾化角: " + c_3.toFixed(4) + "°</p>" +
+        "<p>间隙长度mm: " + Andp_6.toFixed(4) + "</p>" +
+        "<p>轴向喷注外直径mm: " + (Andp_4 * 1000).toFixed(4) + "</p>" +
+        "<p>径向孔直径mm: " + Ds.toFixed(4) + "</p>" +
+        "<p>本软件只适用于径向孔轴向缝流动均为液体时使用</p>" +
+        "<p>本程序由铼铱工业编写</p>" +
+        "<p>使用有任何问题反馈邮箱lseqy2024@outlook.com</p>";
+
+}
+</script>
+</head>
+<body>
+<h2>针栓喷注器计算</h2>
+<form>
+    <label>径向流量kg/s:</label>
+    <input type="number" id="mo_1">
+    <br>
+    <label>轴向流量kg/s:</label>
+    <input type="number" id="mf_1">
+    <br>
+    <label>径向密度kg/m3:</label>
+    <input type="number" id="ro_1">
+    <br>
+    <label>轴向密度kg/m3:</label>
+    <input type="number" id="rf_1">
+    <br>
+    <label>径向压降MPa:</label>
+    <input type="number" id="do_1">
+    <br>
+    <label>轴向压降MPa:</label>
+    <input type="number" id="df_1">
+    <br>
+    <label>径向流阻系数:</label>
+    <input type="number" id="zuo_1">
+    <br>
+    <label>轴向流阻系数:</label>
+    <input type="number" id="zuf_1">
+    <br>
+    <label>径向孔个数:</label>
+    <input type="number" id="nf">
+    <br>
+    <label>针栓直径mm:</label>
+    <input type="number" id="Dp_1">
+    <br>
+    <button type="button" onclick="calculate()">计算</button>
+</form>
+<div id="output"></div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算公式</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+        button {
+            margin: 20px 0;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>计算公式</h1>
+        <label for="height">请输入高度mm:</label>
+        <input type="number" id="height" step="0.01">
+
+        <label for="thickness">请输入厚度mm:</label>
+        <input type="number" id="thickness" step="0.01">
+
+        <label for="width">请输入宽度mm:</label>
+        <input type="number" id="width" step="0.01">
+
+        <label for="thermalConductivity">请输入导热系数w/(m*k):</label>
+        <input type="number" id="thermalConductivity" step="0.01">
+
+        <label for="convectiveHeatTransferCoefficient">请输入对流换热系数w/(m**2*k):</label>
+        <input type="number" id="convectiveHeatTransferCoefficient" step="0.01">
+
+        <button onclick="calculate()">计算</button>
+
+        <div id="result"></div>
+
+        <div id="footer">
+            <p>本程序由铼铱工业编写。</p>
+            <p>使用有任何问题反馈邮箱lseqy2024@outlook.com</p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            let h = parseFloat(document.getElementById('height').value) * 0.001;
+            let b = parseFloat(document.getElementById('thickness').value) * 0.001;
+            let a = parseFloat(document.getElementById('width').value) * 0.001;
+            let n = parseFloat(document.getElementById('thermalConductivity').value);
+            let hf = parseFloat(document.getElementById('convectiveHeatTransferCoefficient').value);
+
+            if (isNaN(h) || isNaN(b) || isNaN(a) || isNaN(n) || isNaN(hf)) {
+                document.getElementById('result').innerText = "请确保所有输入都是有效的数字。";
+                return;
+            }
+
+            let x1 = (h / b) * Math.sqrt((2 * hf * b) / n);
+            let x2 = (Math.tan(h) * x1) / x1;
+            let x3 = (a / (a + b)) + (2 * h / (a + b)) * x2;
+            let result = x3 + 1;
+
+            document.getElementById('result').innerText = "结果: " + result;
+        }
+    </script>
+</body>
+</html>

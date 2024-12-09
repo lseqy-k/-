@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>相变温度计算器</title>
+    <script>
+        function calculate() {
+            let p1 = parseFloat(document.getElementById("p1").value);
+            let t1 = parseFloat(document.getElementById("t1").value);
+            let hvap = parseFloat(document.getElementById("hvap").value) * 1000; // Convert kJ/mol to J/mol
+            let p2 = parseFloat(document.getElementById("p2").value);
+
+            let z1 = p2 / p1;
+            let z2 = 8.314 / hvap;
+            let z3 = 1 / t1;
+            let z4 = Math.log(z1);
+            let z5 = z3 - (z2 * z4);
+            let z6 = 1 / z5;
+            let z7 = z6 - 273.16;
+
+            document.getElementById("resultK").innerHTML = "相变温度: " + z6.toFixed(2) + " K";
+            document.getElementById("resultC").innerHTML = "相变温度: " + z7.toFixed(2) + " °C";
+        }
+    </script>
+</head>
+<body>
+    <h2>相变温度计算器</h2>
+    <form>
+        <label for="p1">请输入已知参数压力 (KPa):</label><br>
+        <input type="number" id="p1" name="p1"><br><br>
+        <label for="t1">请输入已知参数相变温度 (K):</label><br>
+        <input type="number" id="t1" name="t1"><br><br>
+        <label for="hvap">请输入汽化焓 (kJ/mol):</label><br>
+        <input type="number" id="hvap" name="hvap"><br><br>
+        <label for="p2">请输入压力 (KPa):</label><br>
+        <input type="number" id="p2" name="p2"><br><br>
+        <input type="button" value="计算" onclick="calculate()">
+    </form>
+    <p id="resultK">相变温度: </p>
+    <p id="resultC">相变温度: </p>
+    <footer>
+        <p>本程序由铼铱工业编写</p>
+        <p>使用有任何问题反馈邮箱: <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+    </footer>
+</body>
+</html>

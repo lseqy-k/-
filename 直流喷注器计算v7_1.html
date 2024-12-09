@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>直流喷注器计算</title>
+<script>
+function calculate() {
+    var dp_1 = parseFloat(document.getElementById("dp_1").value);
+    var m_2 = parseFloat(document.getElementById("m_2").value);
+    var mu_1 = parseFloat(document.getElementById("mu_1").value);
+    var nf_1 = parseFloat(document.getElementById("nf_1").value);
+    var r_1 = parseFloat(document.getElementById("r_1").value);
+    var dc_1 = parseFloat(document.getElementById("dc_1").value);
+
+    var m_1 = m_2 / nf_1;
+    var An_1 = 2 * r_1 * dp_1 * 1000000;
+    var An_2 = Math.sqrt(An_1);
+    var An_3 = m_1 / (An_2 * mu_1);
+    var d_1 = (4 * An_3) / Math.PI;
+    var d_2 = Math.sqrt(d_1);
+    var v_1 = m_1 / (r_1 * An_3);
+    var dc_2 = Math.sqrt(dc_1) * 0.4;
+
+    document.getElementById("output_v1").textContent = "出口速度: " + v_1.toFixed(2) + " m/s";
+    document.getElementById("output_An3").textContent = "单个面积: " + (An_3 * 1000000).toFixed(2) + " mm2";
+    document.getElementById("output_d2").textContent = "孔直径: " + (d_2 * 1000).toFixed(2) + " mm";
+    document.getElementById("output_dc2").textContent = "建议喷嘴间距: " + dc_2.toFixed(2) + " mm";
+}
+</script>
+</head>
+<body>
+<h2>直流喷注器计算</h2>
+<form>
+  <label for="dp_1">压降MPa:</label>
+  <input type="number" id="dp_1" step="any" required><br><br>
+  
+  <label for="m_2">质量流量kg/s:</label>
+  <input type="number" id="m_2" step="any" required><br><br>
+  
+  <label for="mu_1">流阻系数:</label>
+  <input type="number" id="mu_1" step="any" required><br><br>
+  
+  <label for="nf_1">个数:</label>
+  <input type="number" id="nf_1" step="any" required><br><br>
+  
+  <label for="r_1">密度kg/m3:</label>
+  <input type="number" id="r_1" step="any" required><br><br>
+  
+  <label for="dc_1">燃烧室直径mm:</label>
+  <input type="number" id="dc_1" step="any" required><br><br>
+  
+  <input type="button" value="计算" onclick="calculate()">
+</form>
+
+<div id="results">
+  <p id="output_v1"></p>
+  <p id="output_An3"></p>
+  <p id="output_d2"></p>
+  <p id="output_dc2"></p>
+</div>
+
+<p style="margin-top: 20px;">本程序由铼铱工业编写</p>
+<p>使用有任何问题反馈邮箱 <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+
+</body>
+</html>

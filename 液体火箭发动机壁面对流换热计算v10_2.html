@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>液体火箭发动机壁面对流换热计算</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    h2 {
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .result {
+        margin-top: 20px;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+    .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 0.8em;
+    }
+</style>
+</head>
+<body>
+    <h2>液体火箭发动机壁面对流换热计算</h2>
+    <form id="rocketForm">
+        <label for="throat_diameter">喉部直径(mm):</label>
+        <input type="number" id="throat_diameter" name="throat_diameter" step="0.001" required>
+        
+        <label for="viscosity">黏度(kg/(m*s)):</label>
+        <input type="number" id="viscosity" name="viscosity" step="0.001" required>
+        
+        <label for="specific_heat">定压比热容(KJ/(Kg*K)):</label>
+        <input type="number" id="specific_heat" name="specific_heat" step="0.001" required>
+        
+        <label for="prandtl_number">普朗数:</label>
+        <input type="number" id="prandtl_number" name="prandtl_number" step="0.001" required>
+        
+        <label for="chamber_pressure">燃烧室压力(MPa):</label>
+        <input type="number" id="chamber_pressure" name="chamber_pressure" step="0.001" required>
+        
+        <label for="characteristic_velocity">特征速度(m/s):</label>
+        <input type="number" id="characteristic_velocity" name="characteristic_velocity" step="0.001" required>
+        
+        <label for="throat_radius">喉部过渡平均半径(mm):</label>
+        <input type="number" id="throat_radius" name="throat_radius" step="0.001" required>
+        
+        <label for="calculate_cross_sectional_area">计算截面半径(mm):</label>
+        <input type="number" id="calculate_cross_sectional_area" name="calculate_cross_sectional_area" step="0.001" required>
+        
+        <label for="xm">修正系数:</label>
+        <input type="number" id="xm" name="xm" step="0.001" required>
+        
+        <label for="transition_temperature">设定内壁温度(K):</label>
+        <input type="number" id="transition_temperature" name="transition_temperature" step="0.001" required>
+        
+        <label for="gas_temperature">燃气温度(K):</label>
+        <input type="number" id="gas_temperature" name="gas_temperature" step="0.001" required>
+        
+        <label for="convective_area">对流面积(mm2):</label>
+        <input type="number" id="convective_area" name="convective_area" step="0.001" required>
+        
+        <label for="coolant_mass_flow_rate">冷却剂质量流量(kg/s):</label>
+        <input type="number" id="coolant_mass_flow_rate" name="coolant_mass_flow_rate" step="0.001" required>
+        
+        <label for="coolant_specific_heat">冷却剂比热容(J/kg):</label>
+        <input type="number" id="coolant_specific_heat" name="coolant_specific_heat" step="0.001" required>
+        
+        <button type="button" onclick="calculate()">计算</button>
+    </form>
+
+    <div class="result" id="results"></div>
+
+    <div class="footer">
+        <p>本程序由铼铱工业编写。</p>
+        <p>如有任何问题，请联系我们：<a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+    </div>
+
+    <script>
+        function calculate() {
+            // 获取输入值
+            let dt = parseFloat(document.getElementById('throat_diameter').value) / 1000;
+            let n = parseFloat(document.getElementById('viscosity').value);
+            let cp = parseFloat(document.getElementById('specific_heat').value);
+            let pr = parseFloat(document.getElementById('prandtl_number').value);
+            let pc = parseFloat(document.getElementById('chamber_pressure').value) * 1000000;
+            let c = parseFloat(document.getElementById('characteristic_velocity').value);
+            let R = parseFloat(document.getElementById('throat_radius').value) / 1000;
+            let a = parseFloat(document.getElementById('calculate_cross_sectional_area').value) / 1000;
+            let xm = parseFloat(document.getElementById('xm').value);
+            let twg = parseFloat(document.getElementById('transition_temperature').value);
+            let tst = parseFloat(document.getElementById('gas_temperature').value);
+            let mi = parseFloat(document.getElementById('convective_area').value) / 1e6;
+            let qco = parseFloat(document.getElementById('coolant_mass_flow_rate').value);
+            let cco = parseFloat(document.getElementById('coolant_specific_heat').value);
+
+            // 计算
+            let Temperature_ratio = twg / tst;
+            let Throat_area = Math.pow(dt / 2, 2) * Math.PI;
+            let Calculate_cross_sectional_area = Math.pow(a , 2) * Math.PI;
+            let hg_1 = 0.026 / Math.pow(dt, 0.2);
+            let hg_2 = Math.pow(n, 0.2) * cp;
+            let hg_3 = hg_2 / Math.pow(pr, 0.6);
+            let hg_4 = Math.pow(pc / c, 0.8);
+            let hg_5 = Math.pow(dt / R, 0.1);
+            let hg_6 = Math.pow(Throat_area / Calculate_cross_sectional_area, 0.9);
+            let hg = hg_1 * hg_2 * hg_3 * hg_4 * hg_5 * hg_6 * xm * 1000;
+            let qk = hg * (tst - twg);
+            let Total_calories = qk * mi;
+            let Temperature_rise = Total_calories / (qco * cco);
+
+            // 显示结果
+            let resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3>计算结果</h3>
+                <p>温度比值: ${Temperature_ratio.toFixed(4)}</p>
+                <p>对流换热系数: ${hg.toFixed(4)} W/(m^2*K)</p>
+                <p>热流密度: ${qk.toFixed(4)} W/m^2</p>
+                <p>总热量: ${Total_calories.toFixed(4)} W</p>
+                <p>冷却剂温升: ${Temperature_rise.toFixed(4)} K</p>
+            `;
+        }
+    </script>
+
+    </body>
+</html>
+

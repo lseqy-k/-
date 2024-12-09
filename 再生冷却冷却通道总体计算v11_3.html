@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冷却剂温度计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>冷却剂温度计算器</h2>
+
+<form id="coolingForm">
+    <label for="widthInput">冷却通道宽度(mm):</label>
+    <input type="number" id="widthInput" required>
+    <label for="heightInput">冷却通道高度(mm):</label>
+    <input type="number" id="heightInput" required>
+    <label for="ribThicknessInput">冷却通道肋厚度(mm):</label>
+    <input type="number" id="ribThicknessInput" required>
+    <label for="channelCountInput">冷却通道个数:</label>
+    <input type="number" id="channelCountInput" required>
+    <label for="massFlowRateInput">冷却剂质量流量kg/s:</label>
+    <input type="number" id="massFlowRateInput" required>
+    <label for="viscosityInput">冷却剂黏度(kg/(m*s)):</label>
+    <input type="number" id="viscosityInput" required>
+    <label for="specificHeatInput">冷却剂比热容(KJ/(Kg*K)):</label>
+    <input type="number" id="specificHeatInput" required>
+    <label for="densityInput">冷却剂密度(kg/m3):</label>
+    <input type="number" id="densityInput" required>
+    <label for="thermalConductivityInput">冷却剂导热率（W/m*k）:</label>
+    <input type="number" id="thermalConductivityInput" required>
+    <label for="wallConductivityInput">壁面导热率（W/m*k）:</label>
+    <input type="number" id="wallConductivityInput" required>
+    <label for="heatFluxDensityInput">热流密度（W/m^2）:</label>
+    <input type="number" id="heatFluxDensityInput" required>
+    <label for="temperatureRiseInput">冷却剂温升（k）:</label>
+    <input type="number" id="temperatureRiseInput" required>
+    <label for="ambientTemperatureInput">当地气温（摄氏度）:</label>
+    <input type="number" id="ambientTemperatureInput" required>
+    <label for="wallThicknessInput">推力室壁厚（mm）:</label>
+    <input type="number" id="wallThicknessInput" required>
+    <label for="ribEffectCoefficientInput">肋条效应系数:</label>
+    <input type="number" id="ribEffectCoefficientInput" required>
+
+    <button type="button" onclick="calculate()">计算</button>
+</form>
+
+<div id="resultContainer" class="result"></div>
+
+<p style="font-size: 12px; text-align: center; margin-top: 20px;">本程序由铼铱工业编写。如有任何问题，请发送邮件至 <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+
+<script>
+function calculate() {
+    // 获取用户输入的值
+    var a = parseFloat(document.getElementById('widthInput').value) / 1000;
+    var h = parseFloat(document.getElementById('heightInput').value) / 1000;
+    var b = parseFloat(document.getElementById('ribThicknessInput').value) / 1000;
+    var n = parseFloat(document.getElementById('channelCountInput').value);
+    var qm = parseFloat(document.getElementById('massFlowRateInput').value);
+    var mu = parseFloat(document.getElementById('viscosityInput').value);
+    var cp = parseFloat(document.getElementById('specificHeatInput').value);
+    var rou = parseFloat(document.getElementById('densityInput').value);
+    var la = parseFloat(document.getElementById('thermalConductivityInput').value);
+    var law = parseFloat(document.getElementById('wallConductivityInput').value);
+    var q = parseFloat(document.getElementById('heatFluxDensityInput').value);
+    var tf = parseFloat(document.getElementById('temperatureRiseInput').value);
+    var td = parseFloat(document.getElementById('ambientTemperatureInput').value);
+    var xi = parseFloat(document.getElementById('wallThicknessInput').value) / 1000;
+    var np = parseFloat(document.getElementById('ribEffectCoefficientInput').value);
+
+    // 进行计算
+    var de = (2 * a * h) / (a + b);
+    var A = n * a * h;
+    var v = qm / (A * rou);
+    var re = (rou * v * de) / mu;
+    var pr = (cp * mu) / la;
+    var nuf = 0.023 * Math.pow(re, 0.8) * Math.pow(pr, 0.4);
+    var h0 = (nuf * la) / de;
+    var hf = h0 * np;
+    var twf_1 = tf + td + 273.15;
+    var twf_2 = q / (np * hf);
+    var twf = twf_2 + twf_1;
+    var twg_1 = (q * xi) / law;
+    var twg = twg_1 + twf;
+
+    // 显示结果
+    var resultContainer = document.getElementById('resultContainer');
+    resultContainer.innerHTML = `
+        <p>冷却剂流动速度: ${v.toFixed(2)} m/s</p>
+        <p>冷却剂雷诺数: ${re.toFixed(2)}</p>
+        <p>冷却剂普郎特数: ${pr.toFixed(2)}</p>
+        <p>冷却剂努塞尔数: ${nuf.toFixed(2)}</p>
+        <p>冷却剂与壁面对流换热系数: ${hf.toFixed(2)} W/(m^2)</p>
+        <p>液体壁面温度: ${twf.toFixed(2)} K</p>
+        <p>气体壁面温度: ${twg.toFixed(2)} K</p>
+    `;
+
+    // 比较液体壁面温度和气体壁面温度
+    if (twf < twg) {
+        var difference = twg - twf;
+        var percentage = (difference / twg) * 100;
+        resultContainer.innerHTML += `<p>液体壁面温度低于气体壁面温度，差值百分比为 ${percentage.toFixed(2)}%</p>`;
+    } else if (twf > twg) {
+        resultContainer.innerHTML += `<p>啊？这他妈什么情况？液体壁面温度大于气体壁面温度？</p>`;
+    } else {
+        resultContainer.innerHTML += `<p>啊？这他妈什么情况？我操，这就有点离谱了</p>`;
+    }
+}
+</script>
+
+</body>
+</html>

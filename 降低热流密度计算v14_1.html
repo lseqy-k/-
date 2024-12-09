@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>热流密度计算器</title>
+    <script>
+        function calculate() {
+            let q = parseFloat(document.getElementById("q").value);
+            let a = parseFloat(document.getElementById("a").value) * 0.000001; // Convert mm² to m²
+            let cp = parseFloat(document.getElementById("cp").value);
+            let m = parseFloat(document.getElementById("m").value);
+            let j = parseFloat(document.getElementById("j").value) * 0.01; // Convert percentage to decimal
+
+            let q1 = q * j;
+            let x = q1 * a;
+            let t = x / (cp * m);
+
+            document.getElementById("resultQ1").innerHTML = "降低后热流密度: " + q1.toFixed(2) + " W/m²";
+            document.getElementById("resultX").innerHTML = "降低后总热量: " + x.toFixed(2) + " W";
+            document.getElementById("resultT").innerHTML = "降低后温升: " + t.toFixed(2) + " K";
+        }
+    </script>
+</head>
+<body>
+    <h2>热流密度计算器</h2>
+    <form>
+        <label for="q">请输入热流密度 (W/m²):</label><br>
+        <input type="number" id="q" name="q"><br><br>
+        <label for="a">请输入对流面积 (mm²):</label><br>
+        <input type="number" id="a" name="a"><br><br>
+        <label for="cp">请输入冷却剂比热容 (J/kg·K):</label><br>
+        <input type="number" id="cp" name="cp"><br><br>
+        <label for="m">请输入冷却剂质量流量 (kg/s):</label><br>
+        <input type="number" id="m" name="m"><br><br>
+        <label for="j">请输入降低热流密度百分比 (%):</label><br>
+        <input type="number" id="j" name="j"><br><br>
+        <input type="button" value="计算" onclick="calculate()">
+    </form>
+    <p id="resultQ1">降低后热流密度: </p>
+    <p id="resultX">降低后总热量: </p>
+    <p id="resultT">降低后温升: </p>
+    <footer>
+        <p>本程序由铼铱工业编写</p>
+        <p>使用有任何问题反馈邮箱: <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+    </footer>
+</body>
+</html>

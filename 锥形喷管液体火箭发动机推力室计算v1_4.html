@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>液体火箭发动机参数计算</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>液体火箭发动机参数计算</h1>
+        <form id="calcForm">
+            <label for="F_1">设计推力 (kg):</label>
+            <input type="number" id="F_1" required>
+            
+            <label for="Pc_1">设计燃烧室压力 (MPa):</label>
+            <input type="number" id="Pc_1" required>
+            
+            <label for="OF_1">氧燃比:</label>
+            <input type="number" id="OF_1" required>
+            
+            <label for="Isp_1">理论比冲 (s):</label>
+            <input type="number" id="Isp_1" required>
+            
+            <label for="C_1">特征速度 (m/s):</label>
+            <input type="number" id="C_1" required>
+            
+            <label for="L_1">特征长度 (m):</label>
+            <input type="number" id="L_1" required>
+            
+            <label for="Cc_1">收缩比:</label>
+            <input type="number" id="Cc_1" required>
+            
+            <label for="Ce_1">扩张比:</label>
+            <input type="number" id="Ce_1" required>
+            
+            <label for="CTc_1">收敛角度:</label>
+            <input type="number" id="CTc_1" required>
+            
+            <label for="CTe_1">扩张角度:</label>
+            <input type="number" id="CTe_1" required>
+            
+            <label for="Nc_1">燃烧室效率:</label>
+            <input type="number" id="Nc_1" step="0.01" required>
+            
+            <label for="Nn_1">喷管效率:</label>
+            <input type="number" id="Nn_1" step="0.01" required>
+            
+            <button type="button" onclick="calculate()">计算</button>
+        </form>
+        <div class="results" id="results"></div>
+    </div>
+    <footer>
+        本程序由铼铱工业编写。<br>
+        使用有任何问题反馈邮箱 <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a>
+    </footer>
+    <script>
+        function calculate() {
+            const Decimal = window.Decimal;
+
+            const F_1 = new Decimal(document.getElementById("F_1").value);
+            const Pc_1 = new Decimal(document.getElementById("Pc_1").value);
+            const OF_1 = new Decimal(document.getElementById("OF_1").value);
+            const Isp_1 = new Decimal(document.getElementById("Isp_1").value);
+            const C_1 = new Decimal(document.getElementById("C_1").value);
+            const L_1 = new Decimal(document.getElementById("L_1").value);
+            const Cc_1 = new Decimal(document.getElementById("Cc_1").value);
+            const Ce_1 = new Decimal(document.getElementById("Ce_1").value);
+            const CTc_1 = new Decimal(document.getElementById("CTc_1").value);
+            const CTe_1 = new Decimal(document.getElementById("CTe_1").value);
+            const Nc_1 = new Decimal(document.getElementById("Nc_1").value);
+            const Nn_1 = new Decimal(document.getElementById("Nn_1").value);
+
+            const Isps = Isp_1.times(Nc_1).times(Nn_1);
+            const Mc_1 = F_1.div(Isps);
+            const Mfc_1 = Mc_1.div(OF_1.plus(1));
+            const Moc_1 = Mc_1.minus(Mfc_1);
+            const At_1 = C_1.times(Mc_1).div(Pc_1.times(1e6));
+            const Vr_1 = At_1.times(L_1);
+            const Ac_1 = Cc_1.times(At_1);
+            const Ae_1 = Ce_1.times(At_1);
+            const dt_2 = At_1.times(4).div(Math.PI).sqrt();
+            const dc_2 = Ac_1.times(4).div(Math.PI).sqrt();
+            const de_2 = Ae_1.times(4).div(Math.PI).sqrt();
+            const Lep_1 = de_2.minus(dt_2).div(2);
+            const Lcp_1 = dc_2.minus(dt_2).div(2);
+            const Lep_2 = Lep_1.div(Decimal.tan(CTe_1.times(Math.PI).div(180)));
+            const Lcp_2 = Lcp_1.div(Decimal.tan(CTc_1.times(Math.PI).div(180)));
+            const z_1 = At_1.times(Ac_1);
+            const z_2 = z_1.sqrt();
+            const z_3 = At_1.plus(Ac_1).plus(z_2).times(Lcp_2);
+            const Ve_1 = z_3.div(3);
+            const Vc_1 = Vr_1.minus(Ve_1);
+            const Lc_1 = Vc_1.div(Ac_1);
+            const Ac1 = Ac_1.times(10000);
+            const Mc1 = Mc_1.times(1000);
+            const rs = Mc1.div(Ac1);
+
+            document.getElementById("results").innerHTML = `
+                <h2>计算结果</h2>
+                <p>实际比冲: ${Isps.toFixed(10)} s</p>
+                <p>总质量流量: ${Mc_1.toFixed(10)} kg/s</p>
+                <p>氧化剂质量流量: ${Moc_1.toFixed(10)} kg/s</p>
+                <p>燃料质量流量: ${Mfc_1.toFixed(10)} kg/s</p>
+                <p>燃烧室直径: ${(dc_2.times(1000)).toFixed(10)} mm</p>
+                <p>燃烧室长度: ${(Lc_1.times(1000)).toFixed(10)} mm</p>
+                <p>收敛段长度: ${(Lcp_2.times(1000)).toFixed(10)} mm</p>
+                <p>扩张段长度: ${(Lep_2.times(1000)).toFixed(10)} mm</p>
+                <p>出口直径: ${(de_2.times(1000)).toFixed(10)} mm</p>
+                <p>喉径直径: ${(dt_2.times(1000)).toFixed(10)} mm</p>
+                <p>收敛段容积: ${(Ve_1.times(10000)).toFixed(10)} L</p>
+                <p>燃烧室容积: ${(Vc_1.times(10000)).toFixed(10)} L</p>
+                <p>截面流量密度: ${rs.toFixed(10)} g*s/cm²</p>
+            `;
+        }
+    </script>
+</body>
+</html>

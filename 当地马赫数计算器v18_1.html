@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>当地马赫数计算器</title>
+    <script>
+        function calculateMachNumber() {
+            // 获取用户输入
+            var T = parseFloat(document.getElementById("temperature").value);
+            var r = parseFloat(document.getElementById("specificHeatRatio").value);
+            var R = parseFloat(document.getElementById("gasConstant").value);
+            var v = parseFloat(document.getElementById("velocity").value);
+
+            // 计算音速
+            var a = Math.sqrt(r * R * T);
+
+            // 计算马赫数
+            var Ma = v / a;
+
+            // 输出结果
+            document.getElementById("machNumber").innerHTML = "当地马赫数: " + Ma.toFixed(3);
+            document.getElementById("soundSpeed").innerHTML = "该点音速: " + a.toFixed(3) + " m/s";
+        }
+    </script>
+</head>
+<body>
+    <h1>当地马赫数计算器</h1>
+
+    <label for="temperature">请输入温度(K): </label>
+    <input type="number" id="temperature" step="0.01"><br><br>
+
+    <label for="specificHeatRatio">请输入比热比: </label>
+    <input type="number" id="specificHeatRatio" step="0.01"><br><br>
+
+    <label for="gasConstant">请输入气体常数(J/(kg·K)): </label>
+    <input type="number" id="gasConstant" step="0.01"><br><br>
+
+    <label for="velocity">请输入流速（m/s）: </label>
+    <input type="number" id="velocity" step="0.01"><br><br>
+
+    <button onclick="calculateMachNumber()">计算</button>
+
+    <p id="machNumber"></p>
+    <p id="soundSpeed"></p>
+
+    <hr>
+    <p>本软件由铼铱工业编写。如有任何问题反馈邮箱 <a href="mailto:lseqy2024@outlook.com">lseqy2024@outlook.com</a></p>
+</body>
+</html>
